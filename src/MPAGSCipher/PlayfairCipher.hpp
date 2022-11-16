@@ -47,6 +47,9 @@ class PlayfairCipher {
      * Initialise the key
      */
     std::string key_{""};
+    std::map<char, std::pair<int, int>> charToCoord_;
+    std::map<std::pair<int, int>, char> coordToChar_;
+
 };
 
 #endif
