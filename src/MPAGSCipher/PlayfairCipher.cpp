@@ -71,7 +71,7 @@ void PlayfairCipher::setKey(const std::string& key)
 
 
 std::string PlayfairCipher::applyCipher(const std::string& inputText,
-                                        const CipherMode /*cipherMode*/) const
+                                        const CipherMode cipherMode) const
 {
 
   std::string outputText{inputText};
@@ -108,19 +108,34 @@ std::string PlayfairCipher::applyCipher(const std::string& inputText,
     std::pair<int, int> c1 {charToCoord_.at(outputText[i+1])};
 
     // - Apply the rules to these coords to get 'new' coords
+    int change{0}; // +/- 1 if encrypt/decrypt
+    switch (cipherMode) {
+      case CipherMode::Encrypt:
+        change = 1;
+        break;
+      case CipherMode::Decrypt:
+        change = -1;
+        break;
+    }
+
     if (c0.first == c1.first) { // Same x values (column)
-      c0.second = (c0.second + 1)%5;
-      c1.second = (c1.second + 1)%5;
+      c0.second = (c0.second + change)%5;
+      c1.second = (c1.second + change)%5;
     }else if (c0.second == c1.second) { // Same y values (row)
-      c0.first = (c0.first + 1)%5;
-      c1.first = (c1.first + 1)%5;
+      c0.first = (c0.first + change)%5;
+      c1.first = (c1.first + change)%5;
     }else { // Rectangle
       c0.first = c1.first;
       c1.first = c0.first;
     }
     // - Find the letter associated with the new coords
-    // TODO
+    auto newChar0 = coordToChar_.at(c0);
+    auto newChar1 = coordToChar_.at(c1);
+
+    outputText[i] = newChar0;
+    outputText[i+1] = newChar1;
+
   }
   // return the text
-  return inputText;
+  return outputText;
 }
